@@ -4,7 +4,7 @@ import { ShoppingBag } from 'lucide-react';
 const LINKS = [
   { href: '/', label: 'หน้าแรก' },
   { href: '/products', label: 'แคตตาล็อกสินค้า' },
-  { href: '/how-it-works', label: 'วิธีสั่งทำ' },
+  { href: '/Buy', label: 'วิธีสั่งซื้อ' },
 ];
 
 export default function Navbar() {
