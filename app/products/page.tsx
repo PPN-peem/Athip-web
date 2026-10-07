@@ -52,7 +52,7 @@ export default function ProductPage() {
 				<div className="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-4">
 					{products.map((product) => (
 						<article key={product.name} className="group">
-							<div className="relative flex aspect-[4/4.5] items-center justify-center overflow-hidden rounded-sm" style={{ backgroundColor: product.color }}>
+							<div className="relative flex aspect-4/4.5 items-center justify-center overflow-hidden rounded-sm" style={{ backgroundColor: product.color }}>
 								{product.tag && <span className="absolute left-4 top-4 rounded-full bg-[#faf9f6]/90 px-3 py-1 text-[11px] font-medium tracking-wide text-[#566255]">{product.tag}</span>}
 								<span className="select-none text-7xl transition duration-300 group-hover:scale-110" role="img" aria-label={product.name}>{product.icon}</span>
 								<button type="button" aria-label={`Add ${product.name} to bag`} className="absolute bottom-4 right-4 flex h-10 w-10 items-center justify-center rounded-full bg-[#faf9f6] text-xl shadow-sm transition hover:bg-[#344238] hover:text-white">+</button>
