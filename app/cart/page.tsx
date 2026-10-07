@@ -8,10 +8,8 @@ export default function CartPage() {
   const router = useRouter();
   const { items, removeFromCart, updateQuantity } = useCartStore();
 
-  // คำนวณราคารวมของทุกชิ้นในตะกร้า
   const totalPrice = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
-  // แปลงที่อยู่ไฟล์ให้เป็นชื่อที่อ่านง่าย
   const getModelName = (path: string) => {
     if (path.includes('1.glb')) return 'แก้วไม้';
     if (path.includes('2.glb')) return 'กล่องไม้';
@@ -19,6 +17,20 @@ export default function CartPage() {
     if (path.includes('4.glb')) return 'หลามน้อย';
     if (path.includes('mask.glb')) return 'หน้ากาก';
     return 'สินค้าสั่งทำพิเศษ';
+  };
+
+  // เพิ่มฟังก์ชันแปลงรหัสสีเป็นชื่อภาษาไทย
+  const getColorName = (hex: string) => {
+    const colors = [
+      { name: 'ขาว', hex: '#ffffff' },
+      { name: 'แดง', hex: '#ef4444' },
+      { name: 'น้ำเงิน', hex: '#3b82f6' },
+      { name: 'เขียว', hex: '#10b981' },
+      { name: 'ส้ม', hex: '#f59e0b' },
+      { name: 'ดำ', hex: '#111827' },
+    ];
+    const found = colors.find((c) => c.hex.toLowerCase() === hex.toLowerCase());
+    return found ? found.name : hex;
   };
 
   return (
@@ -41,27 +53,24 @@ export default function CartPage() {
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             
-            {/* ฝั่งซ้าย: รายการสินค้าในตะกร้า */}
             <div className="lg:col-span-2 space-y-4">
               {items.map((item) => (
                 <div key={item.id} className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col sm:flex-row items-start sm:items-center gap-6">
                   
-                  {/* ภาพจำลองสีสินค้า */}
                   <div className="w-24 h-24 bg-gray-50 rounded-xl flex items-center justify-center border-2" style={{ borderColor: item.color }}>
                     <div className="w-12 h-12 rounded-full shadow-inner" style={{ backgroundColor: item.color }}></div>
                   </div>
                   
-                  {/* รายละเอียด */}
                   <div className="flex-1">
                     <h3 className="text-lg font-bold">{getModelName(item.model)}</h3>
+                    {/* จุดที่แก้ไข: เรียกใช้ getColorName เพื่อแสดงชื่อสี */}
                     <p className="text-sm text-gray-500 mt-1">
-                      สี: <span className="uppercase">{item.color}</span> | 
+                      สี: <span className="font-medium text-gray-700">{getColorName(item.color)}</span> | 
                       ลาย: {item.pattern ? 'มีลายตกแต่ง' : 'ไม่มีลาย'}
                     </p>
                     <div className="text-blue-600 font-bold mt-2">฿{item.price.toFixed(2)}</div>
                   </div>
 
-                  {/* ปุ่มปรับจำนวนและลบ */}
                   <div className="flex items-center gap-4">
                     <div className="flex items-center border border-gray-200 rounded-lg overflow-hidden">
                       <button onClick={() => updateQuantity(item.id, item.quantity - 1)} className="px-3 py-1 hover:bg-gray-100 text-gray-600 transition-colors">-</button>
@@ -76,7 +85,6 @@ export default function CartPage() {
               ))}
             </div>
 
-            {/* ฝั่งขวา: สรุปยอด */}
             <div className="lg:col-span-1">
               <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 sticky top-24">
                 <h2 className="text-xl font-bold mb-6">สรุปคำสั่งซื้อ</h2>
