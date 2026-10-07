@@ -3,10 +3,10 @@ import { useConfiguratorStore } from '@/store/configurator';
 import { Palette, Image as ImageIcon, Maximize, Move, RotateCw, Scaling, Box } from 'lucide-react';
 
 const MODELS = [
-  { name: 'แบบที่ 1', file: '/models/1.glb' },
-  { name: 'แบบที่ 2', file: '/models/2.glb' },
-  { name: 'แบบที่ 3', file: '/models/3.glb' },
-  { name: 'แบบที่ 4', file: '/models/4.glb' },
+  { name: 'แก้วไม้', file: '/models/1.glb' },
+  { name: 'กล่องไม้', file: '/models/2.glb' },
+  { name: 'ต้าวหลาม', file: '/models/3.glb' },
+  { name: 'หลามน้อย', file: '/models/4.glb' },
   { name: 'หน้ากากหลัก', file: '/models/mask.glb' },
 ];
 
