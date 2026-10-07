@@ -60,11 +60,13 @@ export default function ConfiguratorPanel() {
               key={m.name}
               onClick={() => {
                 setModel(m.file);
-                // รีเซ็ตค่าการปรับลายกลับเป็นค่าเริ่มต้นเมื่อเปลี่ยนโมเดล[cite: 1]
+                setColor('#ffffff'); 
+                setPattern(null);    
+                setModelScale(1);   
                 setPatternScale(1);
                 setPatternRotation(0);
-                setPatternOffset(0, 0); 
-              }}
+                setPatternOffset(0, 0);
+            }}
               className={`p-3 rounded-xl border-2 font-medium transition-all ${
                 selectedModel === m.file ? 'border-blue-600 bg-blue-50 text-blue-600' : 'border-gray-100 hover:border-gray-200 text-gray-600'
               }`}
