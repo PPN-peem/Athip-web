@@ -6,18 +6,6 @@ const products: any[] = [];
 export default function ProductPage() {
     return (
         <main className="min-h-screen bg-[#faf9f6] text-[#26332b]">
-            <header className="border-b border-[#e9e7df]">
-                <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-5 lg:px-10">
-                    <a href="/" className="text-xl font-semibold tracking-[0.12em]">little things<span className="text-[#87977f]">.</span></a>
-                    <nav className="hidden items-center gap-9 text-sm text-[#667168] md:flex" aria-label="Main navigation">
-                        <a className="hover:text-[#26332b]" href="/">Home</a>
-                        <a className="font-medium text-[#26332b]" href="/product">Shop</a>
-                        <a className="hover:text-[#26332b]" href="#about">Our story</a>
-                    </nav>
-                    <a href="#products" className="rounded-full border border-[#d9ded5] px-4 py-2 text-sm font-medium hover:bg-white">Bag <span className="ml-1 text-[#7f8d78]">(0)</span></a>
-                </div>
-            </header>
-
             <section className="mx-auto max-w-7xl px-6 pb-12 pt-14 lg:px-10 lg:pb-16 lg:pt-20">
                 <p className="mb-4 text-xs font-semibold uppercase tracking-[0.2em] text-[#87977f]">Thoughtful things, made to last</p>
                 <div className="flex flex-col justify-between gap-6 md:flex-row md:items-end">
@@ -43,7 +31,7 @@ export default function ProductPage() {
 
                 {/* ส่วนแสดง Product ที่ถูกเว้นว่างไว้ */}
                 {products.length === 0 ? (
-                    <div className="flex min-h-[300px] w-full flex-col items-center justify-center rounded-lg border-2 border-dashed border-[#e9e7df] bg-[#faf9f6]/50">
+                    <div className="flex min-h-75 w-full flex-col items-center justify-center rounded-lg border-2 border-dashed border-[#e9e7df] bg-[#faf9f6]/50">
                         <p className="text-[#858b83]">ไม่มีรายการสินค้าในขณะนี้ (รอการเชื่อมต่อข้อมูล)</p>
                     </div>
                 ) : (
