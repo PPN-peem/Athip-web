@@ -43,8 +43,8 @@ export default function ProductPage() {
 
             <footer id="about" className="border-t border-[#e9e7df] bg-[#f3f2ed]">
                 <div className="mx-auto flex max-w-7xl flex-col gap-3 px-6 py-8 text-sm text-[#737b73] sm:flex-row sm:items-center sm:justify-between lg:px-10">
-                    <p className="font-medium text-[#344238]">Little things, thoughtfully found.</p>
-                    <p>Free shipping on orders over $75 · Made for everyday</p>
+                    <p className="font-medium text-[#344238]">อันนี้ว่าง</p>
+                    <p>ว่างง</p>
                 </div>
             </footer>
         </main>
