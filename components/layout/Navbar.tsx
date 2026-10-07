@@ -1,46 +1,73 @@
+"use client";
 import Link from 'next/link';
-import { ShoppingBag } from 'lucide-react';
+import { ShoppingBag, Menu } from 'lucide-react';
+import { useCartStore } from '@/store/cart';
+import { useEffect, useState } from 'react';
+
 
 const LINKS = [
   { href: '/', label: 'หน้าแรก' },
   { href: '/products', label: 'แคตตาล็อกสินค้า' },
-  { href: '/Buy', label: 'วิธีสั่งซื้อ' },
+  { href: '/contact-us', label: 'ติดต่อเรา' },
 ];
 
 export default function Navbar() {
+  // ดึงข้อมูลสินค้าทั้งหมดจาก Store
+  const items = useCartStore((state) => state.items);
+  const [mounted, setMounted] = useState(false);
+
+  // ป้องกัน Hydration Error ของ Next.js
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // คำนวณจำนวนชิ้นรวมทั้งหมดในตะกร้า
+  const cartCount = items.reduce((sum, item) => sum + item.quantity, 0);
+
   return (
     <header className="sticky top-0 z-50 border-b border-ink/10 bg-white/80 backdrop-blur-md">
       <nav className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-        <Link href="/" className="text-xl font-bold tracking-tight">
+        
+        {/* ฝั่งซ้าย: โลโก้ */}
+        <Link href="/" className="text-xl font-bold tracking-tight text-gray-900">
           ATHIP<span className="font-light text-ink/60">DESIGN</span>
         </Link>
 
-        <div className="hidden items-center gap-8 md:flex">
-          {LINKS.map((l) => (
-            <Link key={l.href} href={l.href} className="text-ink/70 transition-colors hover:text-ink">
-              {l.label}
+        {/* ตรงกลาง: เมนู */}
+        <div className="hidden md:flex space-x-8">
+          {LINKS.map((link) => (
+            <Link 
+              key={link.href} 
+              href={link.href} 
+              className="text-gray-600 hover:text-blue-600 font-medium transition-colors"
+            >
+              {link.label}
             </Link>
           ))}
         </div>
 
-        <Link
-          href="/cart"
-          aria-label="ตะกร้าสินค้า"
-          className="flex items-center gap-2 rounded-full border border-ink/15 px-4 py-2 text-sm transition-colors hover:bg-paper"
-        >
-          <ShoppingBag className="h-4 w-4" />
-          <span>0</span>
-        </Link>
-      </nav>
-
-      {/* เมนูสำหรับมือถือ: เลื่อนแนวนอน ไม่ต้องใช้ JavaScript */}
-      <div className="flex gap-6 overflow-x-auto border-t border-ink/10 px-4 py-2 text-sm md:hidden">
-        {LINKS.map((l) => (
-          <Link key={l.href} href={l.href} className="whitespace-nowrap text-ink/70">
-            {l.label}
+        {/* ฝั่งขวา: ตะกร้าสินค้า และปุ่มเมนูมือถือ */}
+        <div className="flex items-center space-x-4">
+          
+          {/* ปุ่มตะกร้า */}
+          <Link 
+            href="/cart" 
+            className="flex items-center gap-2 px-4 py-2 rounded-full border border-gray-200 hover:border-blue-600 hover:text-blue-600 transition-colors bg-white"
+          >
+            <ShoppingBag className="w-5 h-5" />
+            <span className="font-medium text-sm">
+              {/* ถ้าหน้าเว็บโหลดเสร็จแล้ว ให้โชว์ตัวเลขตะกร้า ถ้ายังให้โชว์ 0 */}
+              {mounted ? cartCount : 0}
+            </span>
           </Link>
-        ))}
-      </div>
+
+          {/* ปุ่ม Menu (แฮมเบอร์เกอร์) สำหรับหน้าจอมือถือ */}
+          <button className="md:hidden text-gray-600 hover:text-blue-600 p-2">
+            <Menu className="w-6 h-6" />
+          </button>
+
+        </div>
+      </nav>
     </header>
   );
 }
