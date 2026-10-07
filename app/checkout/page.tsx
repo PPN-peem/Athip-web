@@ -4,13 +4,22 @@ import { useRouter } from 'next/navigation';
 import { ArrowLeft, CheckCircle, Truck, CreditCard } from 'lucide-react';
 import { useState } from 'react';
 
+// ชุดข้อมูลสีที่อ้างอิงจากหน้า ConfiguratorPanel
+const COLORS = [
+  { name: 'ขาว', hex: '#ffffff' },
+  { name: 'แดง', hex: '#ef4444' },
+  { name: 'น้ำเงิน', hex: '#3b82f6' },
+  { name: 'เขียว', hex: '#10b981' },
+  { name: 'ส้ม', hex: '#f59e0b' },
+  { name: 'ดำ', hex: '#111827' },
+];
+
 export default function CheckoutPage() {
   const router = useRouter();
   
-  // ดึงข้อมูลการออกแบบจาก Zustand Store
+  // ดึงข้อมูลการตั้งค่าสินค้าของลูกค้าจาก Zustand[cite: 7]
   const { selectedModel, selectedColor, selectedPattern } = useConfiguratorStore();
 
-  // State สำหรับเก็บข้อมูลฟอร์มของลูกค้า
   const [formData, setFormData] = useState({
     fullName: '',
     phone: '',
@@ -19,21 +28,17 @@ export default function CheckoutPage() {
     note: ''
   });
 
-  // ฟังก์ชันจัดการเมื่อลูกค้าพิมพ์ข้อมูลในฟอร์ม
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // ฟังก์ชันกดปุ่มยืนยันการสั่งซื้อ
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // ในอนาคตเราจะเขียนโค้ดส่งข้อมูล formData และข้อมูล 3D ไปยัง Database ตรงนี้
     console.log("ข้อมูลลูกค้า:", formData);
     console.log("สเปคสินค้า:", { selectedModel, selectedColor, selectedPattern });
-    alert("ระบบได้รับคำสั่งซื้อเรียบร้อยแล้ว! (นี่คือหน้าต่างจำลอง)");
+    alert("ระบบได้รับคำสั่งซื้อเรียบร้อยแล้ว!");
   };
 
-  // แปลงชื่อไฟล์โมเดลเป็นชื่อที่อ่านง่าย
   const getModelName = (path: string) => {
     if (path.includes('1.glb')) return 'แก้วไม้';
     if (path.includes('2.glb')) return 'กล่องไม้';
@@ -43,11 +48,16 @@ export default function CheckoutPage() {
     return 'สินค้าสั่งทำ';
   };
 
+  // ฟังก์ชันแปลงรหัสสี (Hex) เป็นชื่อสีภาษาไทย
+  const getColorName = (hex: string) => {
+    const found = COLORS.find((c) => c.hex.toLowerCase() === hex.toLowerCase());
+    return found ? found.name : hex;
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 py-10 text-gray-900">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         
-        {/* ปุ่มกลับไปหน้าออกแบบ */}
         <button 
           onClick={() => router.back()} 
           className="flex items-center gap-2 text-gray-500 hover:text-blue-600 mb-8 transition-colors"
@@ -57,7 +67,6 @@ export default function CheckoutPage() {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           
-          {/* ฝั่งซ้าย: ฟอร์มกรอกข้อมูลลูกค้า (พื้นที่ 2 ส่วน) */}
           <div className="lg:col-span-2">
             <div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
               <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
@@ -100,7 +109,6 @@ export default function CheckoutPage() {
             </div>
           </div>
 
-          {/* ฝั่งขวา: สรุปออเดอร์ (พื้นที่ 1 ส่วน) */}
           <div className="lg:col-span-1">
             <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 sticky top-24">
               <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
@@ -118,7 +126,8 @@ export default function CheckoutPage() {
                   <span className="text-gray-500">สีวัสดุ</span>
                   <div className="flex items-center gap-2">
                     <div className="w-5 h-5 rounded-full border border-gray-200 shadow-inner" style={{ backgroundColor: selectedColor }}></div>
-                    <span className="font-medium uppercase text-sm">{selectedColor}</span>
+                    {/* จุดที่เปลี่ยน: เรียกใช้ getColorName เพื่อแสดงชื่อสีภาษาไทยแทนรหัส Hex */}
+                    <span className="font-medium text-sm">{getColorName(selectedColor)}</span>
                   </div>
                 </div>
 
@@ -135,7 +144,7 @@ export default function CheckoutPage() {
 
                 <div className="pt-4 flex justify-between items-end">
                   <span className="text-lg font-bold text-gray-800">ยอดชำระทั้งหมด</span>
-                  <span className="text-2xl font-black text-blue-600">฿0.00</span>
+                  <span className="text-2xl font-black text-blue-600">฿590.00</span>
                 </div>
                 <p className="text-xs text-gray-400 text-right mt-1">* ราคายังไม่รวมค่าจัดส่ง</p>
               </div>
