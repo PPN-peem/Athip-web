@@ -65,7 +65,7 @@ function CustomModel() {
 
 export default function ConfiguratorCanvas() {
   return (
-    <div className="blueprint relative h-[420px] w-full overflow-hidden rounded-2xl border border-ink/10 md:h-[560px]">
+    <div className="blueprint relative h-105 w-full overflow-hidden rounded-2xl border border-ink/10 md:h-140">
       <Canvas camera={{ position: [0, 0, 5], fov: 45 }}>
         <ambientLight intensity={0.6} />
         <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} intensity={1} />
