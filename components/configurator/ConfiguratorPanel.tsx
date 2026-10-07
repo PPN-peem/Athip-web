@@ -62,7 +62,7 @@ export default function ConfiguratorPanel() {
                 setModel(m.file);
                 setColor('#ffffff'); 
                 setPattern(null);    
-                setModelScale(1);   
+                setModelScale(2);   
                 setPatternScale(1);
                 setPatternRotation(0);
                 setPatternOffset(0, 0);
