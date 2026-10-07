@@ -7,7 +7,7 @@ const MODELS = [
   { name: 'กล่องไม้', file: '/models/2.glb' },
   { name: 'ต้าวหลาม', file: '/models/3.glb' },
   { name: 'หลามน้อย', file: '/models/4.glb' },
-  { name: 'หน้ากากหลัก', file: '/models/mask.glb' },
+  { name: 'หน้ากาก', file: '/models/mask.glb' },
 ];
 
 const COLORS = [
