@@ -83,13 +83,13 @@ export default function ConfiguratorPanel() {
           <input 
             type="number" 
             value={modelScale}
-            step="0.5"
+            step="0.1" // ปรับให้ปรับขนาดโมเดลได้ละเอียดขึ้น
             onChange={(e) => handleNumberChange(e.target.value, setModelScale)}
             className="w-20 px-2 py-1 text-right border rounded-md text-sm outline-none focus:border-cobalt"
           />
         </div>
         <input 
-          type="range" min="1" max="10" step="0.5" 
+          type="range" min="0.5" max="10" step="0.1" 
           value={modelScale} 
           onChange={(e) => setModelScale(parseFloat(e.target.value))}
           className="w-full accent-cobalt cursor-pointer"
@@ -156,18 +156,18 @@ export default function ConfiguratorPanel() {
       {selectedPattern && (
         <div className="space-y-5 bg-paper/50 p-4 rounded-xl border border-ink/5 mt-4">
           
-          {/* ขยายลาย (สามารถพิมพ์ค่าติดลบเพื่อกลับด้านรูปได้) */}
+          {/* ขยายลาย */}
           <div>
             <div className="flex justify-between items-center text-sm mb-2 font-medium">
               <span className="flex items-center gap-1"><Scaling className="w-4 h-4"/> ขนาดลาย</span>
               <input 
-                type="number" step="0.1" value={patternScale} 
+                type="number" step="0.01" value={patternScale} 
                 onChange={(e) => handleNumberChange(e.target.value, setPatternScale)}
                 className="w-16 px-1 py-1 text-right border rounded-md text-xs outline-none focus:border-cobalt bg-white"
               />
             </div>
-            {/* ขยายแถบเลื่อนให้รองรับค่าติดลบ -5 ถึง 5 */}
-            <input type="range" min="0.1" max="5" step="0.1" value={patternScale} onChange={(e) => setPatternScale(parseFloat(e.target.value))} className="w-full accent-cobalt cursor-pointer"/>
+            {/* ความละเอียด 0.01 และขยายขอบเขตได้ใหญ่สุด 10 เท่า */}
+            <input type="range" min="0.01" max="10" step="0.01" value={patternScale} onChange={(e) => setPatternScale(parseFloat(e.target.value))} className="w-full accent-cobalt cursor-pointer"/>
           </div>
           
           {/* หมุนลาย */}
@@ -175,13 +175,13 @@ export default function ConfiguratorPanel() {
             <div className="flex justify-between items-center text-sm mb-2 font-medium">
               <span className="flex items-center gap-1"><RotateCw className="w-4 h-4"/> หมุนลาย (องศา)</span>
               <input 
-                type="number" step="1" value={patternRotation} 
+                type="number" step="0.5" value={patternRotation} 
                 onChange={(e) => handleNumberChange(e.target.value, setPatternRotation)}
                 className="w-16 px-1 py-1 text-right border rounded-md text-xs outline-none focus:border-cobalt bg-white"
               />
             </div>
-            {/* ปรับให้หมุนติดลบได้ -360 ถึง 360 */}
-            <input type="range" min="-360" max="360" step="1" value={patternRotation} onChange={(e) => setPatternRotation(parseFloat(e.target.value))} className="w-full accent-cobalt cursor-pointer"/>
+            {/* ละเอียดขึ้นที่ละ 0.5 องศา */}
+            <input type="range" min="-360" max="360" step="0.5" value={patternRotation} onChange={(e) => setPatternRotation(parseFloat(e.target.value))} className="w-full accent-cobalt cursor-pointer"/>
           </div>
 
           {/* เลื่อนซ้าย-ขวา */}
@@ -189,12 +189,13 @@ export default function ConfiguratorPanel() {
             <div className="flex justify-between items-center text-sm mb-2 font-medium">
               <span className="flex items-center gap-1"><Move className="w-4 h-4"/> แกน X (ซ้าย-ขวา)</span>
               <input 
-                type="number" step="0.1" value={patternOffsetX} 
+                type="number" step="0.01" value={patternOffsetX} 
                 onChange={(e) => handleNumberChange(e.target.value, (val) => setPatternOffset(val, patternOffsetY))}
                 className="w-16 px-1 py-1 text-right border rounded-md text-xs outline-none focus:border-cobalt bg-white"
               />
             </div>
-            <input type="range" min="-3" max="3" step="0.1" value={patternOffsetX} onChange={(e) => setPatternOffset(parseFloat(e.target.value), patternOffsetY)} className="w-full accent-cobalt cursor-pointer"/>
+            {/* ขยายให้เลื่อนได้กว้างขึ้นเป็น -5 ถึง 5 และละเอียด 0.01 */}
+            <input type="range" min="-5" max="5" step="0.01" value={patternOffsetX} onChange={(e) => setPatternOffset(parseFloat(e.target.value), patternOffsetY)} className="w-full accent-cobalt cursor-pointer"/>
           </div>
 
           {/* เลื่อนบน-ล่าง */}
@@ -202,12 +203,12 @@ export default function ConfiguratorPanel() {
             <div className="flex justify-between items-center text-sm mb-2 font-medium">
               <span className="flex items-center gap-1"><Move className="w-4 h-4"/> แกน Y (บน-ล่าง)</span>
               <input 
-                type="number" step="0.1" value={patternOffsetY} 
+                type="number" step="0.01" value={patternOffsetY} 
                 onChange={(e) => handleNumberChange(e.target.value, (val) => setPatternOffset(patternOffsetX, val))}
                 className="w-16 px-1 py-1 text-right border rounded-md text-xs outline-none focus:border-cobalt bg-white"
               />
             </div>
-            <input type="range" min="-3" max="3" step="0.1" value={patternOffsetY} onChange={(e) => setPatternOffset(patternOffsetX, parseFloat(e.target.value))} className="w-full accent-cobalt cursor-pointer"/>
+            <input type="range" min="-5" max="5" step="0.01" value={patternOffsetY} onChange={(e) => setPatternOffset(patternOffsetX, parseFloat(e.target.value))} className="w-full accent-cobalt cursor-pointer"/>
           </div>
 
         </div>
