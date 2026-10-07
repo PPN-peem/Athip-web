@@ -1,147 +1,241 @@
 "use client";
-import { useState } from "react";
-import { useCartStore } from "@/store/cart";
-import { useRouter } from "next/navigation";
-import Link from "next/link";
+import { useConfiguratorStore } from '@/store/configurator';
+import { useCartStore } from '@/store/cart';
+import { useRouter } from 'next/navigation';
+import { Palette, Image as ImageIcon, Maximize, Move, RotateCw, Scaling, Box, ShoppingCart } from 'lucide-react';
 
-const products = [
-  { name: "Everyday Ceramic Mug", category: "Home & Living", price: 24, color: "#d9c8b4", icon: "☕", tag: "Bestseller" },
-  { name: "Weekend Canvas Tote", category: "Accessories", price: 32, color: "#c9d2c1", icon: "👜", tag: "" },
-  { name: "Soft Knit Throw", category: "Home & Living", price: 68, color: "#e8d8c8", icon: "🧶", tag: "New" },
-  { name: "Little Garden Candle", category: "Wellness", price: 28, color: "#d8d7c6", icon: "🕯️", tag: "" },
-  { name: "Sunday Market Vase", category: "Home & Living", price: 46, color: "#dfc7bf", icon: "🏺", tag: "" },
-  { name: "Daily Ritual Journal", category: "Stationery", price: 18, color: "#cbd4da", icon: "📔", tag: "" },
-  { name: "Coastal Hand Soap", category: "Wellness", price: 16, color: "#d6e0d9", icon: "🧼", tag: "" },
-  { name: "A Little Bit of Sunshine", category: "Just because", price: 22, color: "#ead9a9", icon: "🌼", tag: "Staff pick" },
+const MODELS = [
+  { name: 'แก้วไม้', file: '/models/1.glb' },
+  { name: 'กล่องไม้', file: '/models/2.glb' },
+  { name: 'ต้าวหลาม', file: '/models/3.glb' },
+  { name: 'หลามน้อย', file: '/models/4.glb' },
+  { name: 'หน้ากาก', file: '/models/mask.glb' },
 ];
 
-const categories = ["All things", "Home & Living", "Accessories", "Wellness", "Stationery"];
+const COLORS = [
+  { name: 'ขาว', hex: '#ffffff' },
+  { name: 'แดง', hex: '#ef4444' },
+  { name: 'น้ำเงิน', hex: '#3b82f6' },
+  { name: 'เขียว', hex: '#10b981' },
+  { name: 'ส้ม', hex: '#f59e0b' },
+  { name: 'ดำ', hex: '#111827' },
+];
 
-export default function ProductPage() {
+const PATTERNS = [
+  { name: 'สีพื้น (ไม่มีลาย)', file: null },
+  { name: 'ลายมาสก์ 1', file: '/patterns/mask1.png' },
+  { name: 'ลายมาสก์ 2', file: '/patterns/mask2.png' },
+];
+
+export default function ConfiguratorPanel() {
   const router = useRouter();
-  const { items, addToCart } = useCartStore();
-  const [activeCategory, setActiveCategory] = useState("All things");
+  
+  const { 
+    selectedModel, setModel,
+    selectedColor, setColor, selectedPattern, setPattern,
+    modelScale, setModelScale, patternScale, setPatternScale,
+    patternRotation, setPatternRotation, patternOffsetX, patternOffsetY, setPatternOffset
+  } = useConfiguratorStore();
+  
+  const current = COLORS.find((c) => c.hex === selectedColor);
 
-  // คำนวณจำนวนสินค้าทั้งหมดในตะกร้า
-  const totalItemsCount = items.reduce((sum, item) => sum + item.quantity, 0);
-
-  // กรองสินค้าตามหมวดหมู่ที่เลือก
-  const filteredProducts = activeCategory === "All things" 
-    ? products 
-    : products.filter(p => p.category === activeCategory);
+  // ฟังก์ชันช่วยเหลือสำหรับป้องกันค่า NaN เวลาผู้ใช้ลบตัวเลขในช่องพิมพ์จนหมด[cite: 1]
+  const handleNumberChange = (val: string, setter: (v: number) => void) => {
+    const num = parseFloat(val);
+    if (!isNaN(num)) setter(num);
+  };
 
   return (
-    <main className="min-h-screen bg-[#faf9f6] text-[#26332b]">
-      {/* Header */}
-      <header className="border-b border-[#e9e7df]">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-5 lg:px-10">
-          <Link href="/" className="text-xl font-semibold tracking-[0.12em]">
-            little things<span className="text-[#87977f]">.</span>
-          </Link>
-          <nav className="hidden items-center gap-9 text-sm text-[#667168] md:flex" aria-label="Main navigation">
-            <Link className="hover:text-[#26332b]" href="/">Home</Link>
-            <Link className="font-medium text-[#26332b]" href="/product">Shop</Link>
-            <Link className="hover:text-[#26332b]" href="#about">Our story</Link>
-          </nav>
-          <Link 
-            href="/cart" 
-            className="rounded-full border border-[#d9ded5] px-4 py-2 text-sm font-medium hover:bg-white transition-colors"
-          >
-            Bag <span className="ml-1 text-[#7f8d78]">({totalItemsCount})</span>
-          </Link>
+    <div className="rounded-2xl border border-gray-100 bg-white p-6 space-y-8 max-h-[80vh] overflow-y-auto shadow-sm">
+      
+      {/* 1. เลือกโมเดล */}
+      <div>
+        <div className="mb-4 flex items-center gap-2 text-lg font-bold">
+          <Box className="h-5 w-5 text-gray-700" />
+          <h2>รูปทรงสินค้า</h2>
         </div>
-      </header>
-
-      {/* Hero Section */}
-      <section className="mx-auto max-w-7xl px-6 pb-12 pt-14 lg:px-10 lg:pb-16 lg:pt-20">
-        <p className="mb-4 text-xs font-semibold uppercase tracking-[0.2em] text-[#87977f]">Thoughtful things, made to last</p>
-        <div className="flex flex-col justify-between gap-6 md:flex-row md:items-end">
-          <div>
-            <h1 className="max-w-2xl text-4xl font-medium tracking-tight sm:text-5xl lg:text-6xl">
-              Good things for<br className="hidden sm:block" /> everyday living.
-            </h1>
-            <p className="mt-5 max-w-lg leading-7 text-[#737b73]">A considered collection of useful, lovely objects for your home and the people in it.</p>
-          </div>
-          <p className="text-sm text-[#737b73]">A few favorites, picked just for you <span aria-hidden="true">✳</span></p>
-        </div>
-      </section>
-
-      {/* Product Catalog & Categories */}
-      <section id="products" className="mx-auto max-w-7xl px-6 pb-20 lg:px-10">
-        <div className="mb-8 flex flex-col justify-between gap-5 border-b border-[#e9e7df] pb-5 sm:flex-row sm:items-center">
-          <div className="flex flex-wrap gap-2" aria-label="Product categories">
-            {categories.map((category) => (
-              <button 
-                key={category} 
-                type="button" 
-                onClick={() => setActiveCategory(category)}
-                className={`rounded-full px-4 py-2 text-sm transition ${
-                  activeCategory === category 
-                    ? "bg-[#344238] text-white" 
-                    : "border border-[#e4e5dd] text-[#687169] hover:bg-white"
-                }`}
-              >
-                {category}
-              </button>
-            ))}
-          </div>
-          <p className="text-sm text-[#858b83]">Showing {filteredProducts.length} lovely finds</p>
-        </div>
-
-        {/* Product Grid */}
-        <div className="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-4">
-          {filteredProducts.map((product) => (
-            <article key={product.name} className="group">
-              <div 
-                className="relative flex aspect-4/4.5 items-center justify-center overflow-hidden rounded-sm" 
-                style={{ backgroundColor: product.color }}
-              >
-                {product.tag && (
-                  <span className="absolute left-4 top-4 rounded-full bg-[#faf9f6]/90 px-3 py-1 text-[11px] font-medium tracking-wide text-[#566255]">
-                    {product.tag}
-                  </span>
-                )}
-                <span className="select-none text-7xl transition duration-300 group-hover:scale-110" role="img" aria-label={product.name}>
-                  {product.icon}
-                </span>
-                
-                {/* ปุ่มกดเพิ่มลงตะกร้า */}
-                <button 
-                  type="button" 
-                  aria-label={`Add ${product.name} to bag`}
-                  onClick={() => {
-                    addToCart({
-                      model: product.name,
-                      color: product.color,
-                      pattern: null,
-                      price: product.price,
-                      quantity: 1
-                    });
-                  }}
-                  className="absolute bottom-4 right-4 flex h-10 w-10 items-center justify-center rounded-full bg-[#faf9f6] text-xl shadow-sm transition hover:bg-[#344238] hover:text-white"
-                >
-                  +
-                </button>
-              </div>
-              <div className="flex items-start justify-between gap-3 pt-4">
-                <div>
-                  <p className="text-[11px] uppercase tracking-[0.13em] text-[#92988f]">{product.category}</p>
-                  <h2 className="mt-1.5 font-medium">{product.name}</h2>
-                </div>
-                <p className="pt-4 text-sm">${product.price}</p>
-              </div>
-            </article>
+        <div className="grid grid-cols-2 gap-3">
+          {MODELS.map((m) => (
+            <button
+              key={m.name}
+              onClick={() => {
+                setModel(m.file);
+                // รีเซ็ตค่าการปรับลายกลับเป็นค่าเริ่มต้นเมื่อเปลี่ยนโมเดล[cite: 1]
+                setPatternScale(1);
+                setPatternRotation(0);
+                setPatternOffset(0, 0); 
+              }}
+              className={`p-3 rounded-xl border-2 font-medium transition-all ${
+                selectedModel === m.file ? 'border-blue-600 bg-blue-50 text-blue-600' : 'border-gray-100 hover:border-gray-200 text-gray-600'
+              }`}
+            >
+              {m.name}
+            </button>
           ))}
         </div>
-      </section>
+      </div>
 
-      {/* Footer */}
-      <footer id="about" className="border-t border-[#e9e7df] bg-[#f3f2ed]">
-        <div className="mx-auto flex max-w-7xl flex-col gap-3 px-6 py-8 text-sm text-[#737b73] sm:flex-row sm:items-center sm:justify-between lg:px-10">
-          <p className="font-medium text-[#344238]">Little things, thoughtfully found.</p>
-          <p>Free shipping on orders over $75 · Made for everyday</p>
+      <hr className="border-gray-100" />
+
+      {/* 2. ขนาดโมเดล */}
+      <div>
+        <div className="mb-4 flex items-center justify-between">
+          <div className="flex items-center gap-2 text-lg font-bold">
+            <Maximize className="h-5 w-5 text-gray-700" />
+            <h2>ขนาดโมเดล</h2>
+          </div>
+          <input 
+            type="number" 
+            value={modelScale}
+            step="0.1" 
+            onChange={(e) => handleNumberChange(e.target.value, setModelScale)}
+            className="w-20 px-3 py-1.5 text-right border border-gray-200 rounded-lg text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+          />
         </div>
-      </footer>
-    </main>
+        <input 
+          type="range" min="0.5" max="10" step="0.1" 
+          value={modelScale} 
+          onChange={(e) => setModelScale(parseFloat(e.target.value))}
+          className="w-full accent-blue-600 cursor-pointer"
+        />
+      </div>
+
+      <hr className="border-gray-100" />
+
+      {/* 3. สีสินค้า */}
+      <div>
+        <div className="mb-4 flex items-center gap-2 text-lg font-bold">
+          <Palette className="h-5 w-5 text-gray-700" />
+          <h2>สีสินค้า</h2>
+        </div>
+        <div className="flex flex-wrap gap-3">
+          {COLORS.map((c) => (
+            <button
+              key={c.hex}
+              onClick={() => setColor(c.hex)}
+              className={`h-12 w-12 cursor-pointer rounded-full border border-gray-200 shadow-sm transition-transform hover:scale-110 ${
+                selectedColor === c.hex ? 'ring-2 ring-blue-600 ring-offset-2 scale-110' : ''
+              }`}
+              style={{ backgroundColor: c.hex }}
+              title={c.name}
+            />
+          ))}
+        </div>
+      </div>
+
+      <hr className="border-gray-100" />
+
+      {/* 4. เลือกลาย */}
+      <div>
+        <div className="mb-4 flex items-center gap-2 text-lg font-bold">
+          <ImageIcon className="h-5 w-5 text-gray-700" />
+          <h2>ลายตกแต่ง</h2>
+        </div>
+        <div className="grid grid-cols-3 gap-3">
+          {PATTERNS.map((p) => (
+            <button
+              key={p.name}
+              onClick={() => {
+                setPattern(p.file);
+                // รีเซ็ตค่าการปรับลายเมื่อเปลี่ยนลายใหม่[cite: 1]
+                setPatternScale(1);
+                setPatternRotation(0);
+                setPatternOffset(0, 0);
+              }}
+              className={`overflow-hidden rounded-xl border-2 transition-all h-20 relative flex items-center justify-center bg-gray-50 ${
+                selectedPattern === p.file ? 'border-blue-600 shadow-md' : 'border-transparent hover:border-gray-200'
+              }`}
+            >
+              {p.file ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={p.file} alt={p.name} className="h-full w-full object-cover" />
+              ) : (
+                <span className="text-xs text-gray-500 font-medium">ไม่มีลาย</span>
+              )}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* 5. ปรับแต่งลาย (แสดงเฉพาะเมื่อมีการเลือกลาย) */}
+      {selectedPattern && (
+        <div className="space-y-6 bg-gray-50/80 p-5 rounded-2xl border border-gray-100 mt-4">
+          
+          {/* ขยายลาย */}
+          <div>
+            <div className="flex justify-between items-center text-sm mb-2 font-medium text-gray-700">
+              <span className="flex items-center gap-1.5"><Scaling className="w-4 h-4 text-gray-500"/> ขนาดลาย</span>
+              <input 
+                type="number" step="0.01" value={patternScale} 
+                onChange={(e) => handleNumberChange(e.target.value, setPatternScale)}
+                className="w-20 px-2 py-1 text-right border border-gray-200 rounded-lg text-xs outline-none focus:border-blue-500 bg-white"
+              />
+            </div>
+            <input type="range" min="0.01" max="10" step="0.01" value={patternScale} onChange={(e) => setPatternScale(parseFloat(e.target.value))} className="w-full accent-blue-600 cursor-pointer"/>
+          </div>
+          
+          {/* หมุนลาย */}
+          <div>
+            <div className="flex justify-between items-center text-sm mb-2 font-medium text-gray-700">
+              <span className="flex items-center gap-1.5"><RotateCw className="w-4 h-4 text-gray-500"/> หมุนลาย (องศา)</span>
+              <input 
+                type="number" step="0.5" value={patternRotation} 
+                onChange={(e) => handleNumberChange(e.target.value, setPatternRotation)}
+                className="w-20 px-2 py-1 text-right border border-gray-200 rounded-lg text-xs outline-none focus:border-blue-500 bg-white"
+              />
+            </div>
+            <input type="range" min="-360" max="360" step="0.5" value={patternRotation} onChange={(e) => setPatternRotation(parseFloat(e.target.value))} className="w-full accent-blue-600 cursor-pointer"/>
+          </div>
+
+          {/* เลื่อนซ้าย-ขวา */}
+          <div>
+            <div className="flex justify-between items-center text-sm mb-2 font-medium text-gray-700">
+              <span className="flex items-center gap-1.5"><Move className="w-4 h-4 text-gray-500"/> แกน X (ซ้าย-ขวา)</span>
+              <input 
+                type="number" step="0.01" value={patternOffsetX} 
+                onChange={(e) => handleNumberChange(e.target.value, (val) => setPatternOffset(val, patternOffsetY))}
+                className="w-20 px-2 py-1 text-right border border-gray-200 rounded-lg text-xs outline-none focus:border-blue-500 bg-white"
+              />
+            </div>
+            <input type="range" min="-5" max="5" step="0.01" value={patternOffsetX} onChange={(e) => setPatternOffset(parseFloat(e.target.value), patternOffsetY)} className="w-full accent-blue-600 cursor-pointer"/>
+          </div>
+
+          {/* เลื่อนบน-ล่าง */}
+          <div>
+            <div className="flex justify-between items-center text-sm mb-2 font-medium text-gray-700">
+              <span className="flex items-center gap-1.5"><Move className="w-4 h-4 text-gray-500"/> แกน Y (บน-ล่าง)</span>
+              <input 
+                type="number" step="0.01" value={patternOffsetY} 
+                onChange={(e) => handleNumberChange(e.target.value, (val) => setPatternOffset(patternOffsetX, val))}
+                className="w-20 px-2 py-1 text-right border border-gray-200 rounded-lg text-xs outline-none focus:border-blue-500 bg-white"
+              />
+            </div>
+            <input type="range" min="-5" max="5" step="0.01" value={patternOffsetY} onChange={(e) => setPatternOffset(patternOffsetX, parseFloat(e.target.value))} className="w-full accent-blue-600 cursor-pointer"/>
+          </div>
+
+        </div>
+      )}
+
+      {/* 6. ปุ่มเพิ่มลงตะกร้าสินค้า (เชื่อมกับ Cart Store แล้ว) */}
+      <button 
+        onClick={() => {
+          const { addToCart } = useCartStore.getState();
+          addToCart({
+            model: selectedModel,
+            color: selectedColor,
+            pattern: selectedPattern,
+            price: 590, // สามารถเปลี่ยนราคาเริ่มต้นตรงนี้ได้
+            quantity: 1
+          });
+          // พาไปที่หน้าตะกร้า
+          router.push('/cart');
+        }}
+        className="mt-6 w-full rounded-xl bg-blue-600 py-4 font-bold text-white transition-all hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-200 flex items-center justify-center gap-2"
+      >
+        <ShoppingCart className="w-5 h-5" />
+        เพิ่มลงตะกร้าสินค้า
+      </button>
+
+    </div>
   );
 }
