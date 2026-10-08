@@ -68,7 +68,7 @@ export default function Page() {
               color: "#f8fafc",
             }}
           >
-            Let&apos;s build something unforgettable (Mock up preview).
+            Mock up preview.
           </h1>
 
           <p
@@ -189,7 +189,7 @@ export default function Page() {
                 color: "#0f172a",
               }}
             >
-              AQ
+              PP
             </div>
             <div
               style={{
