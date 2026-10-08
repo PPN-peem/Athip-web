@@ -1,8 +1,8 @@
 export default function Page() {
   const details = [
-    { label: "Email", value: "avery@nightshift.studio", href: "mailto:avery@nightshift.studio" },
-    { label: "Phone", value: "+1 (415) 555-0187", href: "tel:+14155550187" },
-    { label: "Instagram", value: "@averyquinn", href: "https://instagram.com/averyquinn" },
+    { label: "Email", value: "pp.peempon@gmail.com", href: "mailto:pp.peempon@gmail.com" },
+    { label: "Phone", value: "+66 984 180-481", href: "tel:+66984180481" },
+    { label: "Instagram", value: "@none", href: "https://instagram.com/averyquinn" },
     { label: "Location", value: "Bangkok, Thailand", href: "https://maps.google.com/?q=Bangkok+Thailand" },
   ];
 
@@ -68,7 +68,7 @@ export default function Page() {
               color: "#f8fafc",
             }}
           >
-            Let&apos;s build something unforgettable.
+            Let&apos;s build something unforgettable (Mock up preview).
           </h1>
 
           <p
@@ -80,9 +80,11 @@ export default function Page() {
               color: "#cbd5e1",
             }}
           >
-            I&apos;m Avery Quinn — a creative technologist, brand storyteller, and motion nerd with
-            a soft spot for bold ideas and beautiful execution. I help founders, artists, and
-            growing teams turn weird sparks into polished digital experiences.
+            I&apos;m PP — a software systems engineer, web developer,  for a web development it's my second jobs.
+            my background is in software systems engineering, and I specialize in creating digital experiences that are both functional and visually stunning.
+             Whether you&apos;re looking to launch a new brand, revamp your website, or explore innovative ideas,
+            I&apos;m here to help bring your vision to life. it's so good to work with you and I&apos;m excited to hear about your project.
+            (PP)
           </p>
 
           <div
@@ -94,7 +96,7 @@ export default function Page() {
             }}
           >
             <a
-              href="mailto:avery@nightshift.studio"
+              href="mailto:pp.peempon@gmail.com"
               style={{
                 textDecoration: "none",
                 padding: "14px 22px",
@@ -134,8 +136,8 @@ export default function Page() {
             }}
           >
             {[
-              ["8+", "Years crafting digital stories"],
-              ["24", "Brand launches shipped"],
+              ["2+", "Years web development experience"],
+              ["4", "Projects completed"],
               ["∞", "Ideas worth chasing"],
             ].map(([value, label]) => (
               <div
@@ -208,9 +210,9 @@ export default function Page() {
             <div style={{ fontSize: "0.76rem", letterSpacing: "0.12em", textTransform: "uppercase", color: "#94a3b8" }}>
               Contact
             </div>
-            <h2 style={{ margin: "10px 0 0", color: "#f8fafc", fontSize: "1.8rem" }}>Avery Quinn</h2>
+            <h2 style={{ margin: "10px 0 0", color: "#f8fafc", fontSize: "1.8rem" }}>PP</h2>
             <p style={{ margin: "8px 0 0", color: "#cbd5e1", lineHeight: 1.6 }}>
-              Brand designer • Creative developer • Visual storyteller
+              Software systems engineer • Web developer • AI developer
             </p>
           </div>
 
