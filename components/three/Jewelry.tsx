@@ -4,8 +4,37 @@ import * as THREE from 'three';
 import { Decal, useTexture } from '@react-three/drei';
 import { useConfigurator } from '@/store/configurator';
 import type { FormId, LayerKey } from '@/lib/catalog';
+import { useGLTF } from '@react-three/drei';
 
-/* ---------- ค่าการแปะลายต่อรูปทรง (พิกัดอยู่ใน local ของ mesh ที่รับลาย) ---------- */
+function GlbModel({ url, form, size = 2.2 }: { url: string; form: FormId; size?: number }) {
+  const { scene } = useGLTF(url);
+
+  const geo = useMemo(() => {
+    let best: THREE.Mesh | null = null;
+    scene.traverse((o) => {
+      const m = o as THREE.Mesh;
+      if (!m.isMesh) return;
+      if (!best || m.geometry.attributes.position.count > best.geometry.attributes.position.count) best = m;
+    });
+    if (!best) return null;
+    const g = (best as THREE.Mesh).geometry.clone();
+    g.center();
+    g.computeBoundingBox();
+    const s = g.boundingBox!.getSize(new THREE.Vector3());
+    const k = size / Math.max(s.x, s.y, s.z);
+    g.scale(k, k, k);
+    return g;
+  }, [scene, size]);
+
+  if (!geo) return null;
+  return (
+    <mesh geometry={geo}>
+      <Metal />
+      <Layers form={form} />
+    </mesh>
+  );
+}
+
 interface DecalCfg { z: number; depth: number; size: number; reachX: number; reachY: number }
 const DECAL: Record<FormId, DecalCfg> = {
   ring: { z: 1.0, depth: 0.7, size: 0.9, reachX: 0.9, reachY: 0.3 },
@@ -13,6 +42,7 @@ const DECAL: Record<FormId, DecalCfg> = {
   charm: { z: 0.1, depth: 0.3, size: 0.9, reachX: 0.35, reachY: 0.6 },
   bracelet: { z: 0.04, depth: 0.2, size: 0.34, reachX: 0.25, reachY: 0.1 },
   earring: { z: 0.09, depth: 0.3, size: 0.4, reachX: 0.15, reachY: 0.3 },
+  Axolotl: { z: 1.5, depth: 2.0, size: 1.5, reachX: 1.0, reachY: 1.0 },
 };
 
 function Metal() {
@@ -256,6 +286,7 @@ export default function Jewelry({ form }: { form: FormId }) {
           <Earring x={0.75} />
         </group>
       )}
+      {form === 'Axolotl' && <GlbModel url="/model/Axolotl.glb" form="Axolotl" size={2.5} />}
     </Fragment>
   );
 }

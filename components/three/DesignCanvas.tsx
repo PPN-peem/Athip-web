@@ -75,8 +75,8 @@ export default function DesignCanvas({ className = '' }: { className?: string })
   return (
     <div className={`relative h-full w-full ${className}`}>
       <Canvas camera={{ position: [0, 0.5, 6], fov: 40 }} dpr={[1, 2]} gl={{ preserveDrawingBuffer: true, antialias: true }}>
-        <ambientLight intensity={0.55} />
-        <directionalLight position={[3, 5, 5]} intensity={1.1} />
+        <ambientLight intensity={0.3} />
+        <directionalLight position={[3, 5, 5]} intensity={0.6} />
         <Environment resolution={256}>
           <Lightformer form="rect" intensity={6} position={[0, 6, 2]} scale={[14, 3, 1]} />
           <Lightformer form="rect" intensity={1.6} position={[0, 0.5, 7]} scale={[9, 5, 1]} />

@@ -1,6 +1,6 @@
 // ข้อมูลกลางของร้าน ATHIP 475 : รูปทรง วัสดุ ลาย พรีเซ็ต ราคา (แก้ที่ไฟล์นี้ที่เดียว)
 
-export type FormId = 'ring' | 'pendant' | 'charm' | 'bracelet' | 'earring';
+export type FormId = 'ring' | 'pendant' | 'charm' | 'bracelet' | 'earring' | 'Axolotl';
 export type LayerKey = 'graffiti' | 'symbol' | 'text';
 export type PatternCategory = 'flame' | 'thai' | 'symbol' | 'animal';
 
@@ -20,6 +20,7 @@ export const FORMS: FormDef[] = [
   { id: 'charm', name: 'CHARM', price: 1800, img: '/art/forms/charm.jpg', unit: 'mm', sizes: [15, 20, 25, 30], defaultSize: 20 },
   { id: 'bracelet', name: 'BRACELET', price: 3900, img: '/art/forms/bracelet.jpg', unit: 'cm', sizes: [15, 16, 17, 18, 19, 20], defaultSize: 17 },
   { id: 'earring', name: 'EARRING', price: 2200, img: '/art/forms/earring.jpg', unit: 'mm', sizes: [15, 20, 25, 30], defaultSize: 20 },
+  { id: 'Axolotl', name: 'Axolotl', price: 9999999, img: '/art/forms/Axolotl.jpg', unit: 'cm', sizes: [40, 45, 50, 55], defaultSize: 45 },
 ];
 
 export const CUSTOM_FORM = { name: 'CUSTOM FORM', img: '/art/forms/custom.jpg', href: '/contact-us' };
