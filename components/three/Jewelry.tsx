@@ -49,7 +49,11 @@ function Metal() {
   const color = useConfigurator((s) => s.color);
   const metalness = useConfigurator((s) => s.metalness);
   const roughness = useConfigurator((s) => s.roughness);
-  return <meshStandardMaterial color={color} metalness={metalness} roughness={roughness} envMapIntensity={1.25} />;
+  return <meshStandardMaterial 
+    color={color} 
+    metalness={metalness} 
+    roughness={Math.max(roughness, 0.35)}
+    envMapIntensity={0.4} />;
 }
 
 /* ---------- เลเยอร์ลาย ---------- */
