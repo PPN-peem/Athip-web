@@ -1,35 +1,43 @@
 "use client";
-import Link from 'next/link';
+import { Hammer, PackageCheck, PenTool, ShieldCheck, Truck } from 'lucide-react';
+import BrushButton from '@/components/ui/BrushButton';
 import OrderGuard from '@/components/order/OrderGuard';
-import { getModelName } from '@/lib/catalog';
+import { LabDecor } from '@/components/decor/Graffiti';
 
-const FLOW = ['DESIGN', 'PRODUCTION', 'QC', 'SHIPPING', 'DELIVERED'];
+const FLOW = [
+  { label: 'DESIGN', icon: PenTool },
+  { label: 'PRODUCTION', icon: Hammer },
+  { label: 'QC', icon: ShieldCheck },
+  { label: 'SHIPPING', icon: Truck },
+  { label: 'DELIVERED', icon: PackageCheck },
+];
 
 export default function ConfirmationPage() {
   return (
     <OrderGuard>
       {(order) => (
-        <main className="mx-auto max-w-2xl px-4 py-16 text-center">
-          <p className="text-xs tracking-[0.3em] text-mist">ORDER CONFIRMED</p>
-          <h1 className="mt-3 font-graffiti text-5xl leading-tight">YOUR MARK<br /><span className="text-neon">HAS BEEN SAVED</span></h1>
-          <p className="mx-auto mt-6 inline-block rounded-lg border border-neon px-6 py-3 font-graffiti text-2xl text-neon">{order.id}</p>
+        <div className="relative">
+          <LabDecor />
+          <main className="relative mx-auto max-w-2xl px-4 py-16 text-center">
+            <h1 className="enter text-4xl font-light leading-tight tracking-wide sm:text-5xl">
+              YOUR MARK<br /><span className="text-xl text-sky">HAS BEEN</span><br />
+              <span className="font-graffiti neon-text text-6xl">SAVED</span>
+            </h1>
+            <p className="enter mt-6 text-5xl font-light tracking-widest" style={{ ['--i' as string]: 3 }}>{(order.items[0]?.pieceId ?? order.id).replace('CUSTOM-', '')}</p>
+            <p className="enter mt-1 text-xs tracking-[0.2em] text-mist" style={{ ['--i' as string]: 3 }}>ORDER {order.id}</p>
 
-          <ul className="card mx-auto mt-8 max-w-md space-y-2 p-5 text-left text-sm">
-            {order.items.map((i) => (
-              <li key={i.id} className="flex justify-between gap-3">
-                <span>{i.pieceId && <span className="text-neon">{i.pieceId} · </span>}{getModelName(i.model)} × {i.quantity}</span>
-                <span className="text-mist">฿{(i.price * i.quantity).toLocaleString()}</span>
-              </li>
-            ))}
-            <li className="flex justify-between border-t border-line pt-2 font-bold"><span>TOTAL</span><span className="text-neon">฿{order.total.toLocaleString()}</span></li>
-          </ul>
+            <ol className="mt-12 grid grid-cols-5 gap-2">
+              {FLOW.map(({ label, icon: Icon }, i) => (
+                <li key={label} className="enter flex flex-col items-center gap-2" style={{ ['--i' as string]: i + 4 }}>
+                  <span className={`grid h-12 w-12 place-items-center rounded-full border ${i < 2 ? 'border-neon text-neon shadow-[0_0_14px_rgba(182,255,0,.35)]' : 'border-[#3a434b] text-mist'}`}><Icon className="h-5 w-5" /></span>
+                  <span className={`text-[10px] tracking-[0.16em] ${i < 2 ? 'text-neon' : 'text-mist'}`}>{label}</span>
+                </li>
+              ))}
+            </ol>
 
-          <ol className="mt-8 flex flex-wrap justify-center gap-2 text-xs tracking-wider text-mist">
-            {FLOW.map((f, i) => <li key={f} className={i === 0 ? 'text-neon' : ''}>{f}{i < FLOW.length - 1 && <span className="mx-2">→</span>}</li>)}
-          </ol>
-
-          <Link href="/order/tracking" className="btn-neon mt-8">TRACK ORDER</Link>
-        </main>
+            <div className="enter mt-12" style={{ ['--i' as string]: 9 }}><BrushButton href="/order/tracking">TRACK ORDER →</BrushButton></div>
+          </main>
+        </div>
       )}
     </OrderGuard>
   );

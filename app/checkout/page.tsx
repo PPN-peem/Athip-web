@@ -1,12 +1,13 @@
 "use client";
 import { useState } from 'react';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, Banknote, CreditCard, QrCode, Wallet } from 'lucide-react';
-import { useCartStore } from '@/store/cart';
+import { Banknote, CreditCard, QrCode, Timer, Wallet } from 'lucide-react';
+import BrushButton from '@/components/ui/BrushButton';
+import { Scrawl, Sparkle } from '@/components/decor/Graffiti';
+import { cartTotals, useCartStore } from '@/store/cart';
 import { useOrderStore, type Customer } from '@/store/order';
 import { useHydrated } from '@/lib/useHydrated';
-import { getModelName } from '@/lib/catalog';
+import { PROVINCES, formatBaht } from '@/lib/catalog';
 
 const PAYMENTS = [
   { id: 'card', label: 'Credit / Debit Card', icon: CreditCard },
@@ -14,113 +15,101 @@ const PAYMENTS = [
   { id: 'bank', label: 'Bank Transfer', icon: Banknote },
   { id: 'wallet', label: 'TrueMoney / Wallet', icon: Wallet },
 ];
+const APPROVALS = ['ตรวจสอบแบบ', 'ตรวจสอบตำแหน่งลาย', 'ตรวจสอบขนาด', 'เข้าใจระยะเวลาผลิต'];
 
-const APPROVALS = [
-  'ตรวจสอบแบบและวัสดุที่เลือกแล้ว',
-  'ยอมรับระยะเวลาผลิต 7–14 วัน',
-  'เข้าใจว่าเป็นสินค้าสั่งทำเฉพาะ ไม่สามารถเปลี่ยนแบบหลังเริ่มผลิต',
-];
+const Field = ({ label, required, children }: { label: string; required?: boolean; children: React.ReactNode }) => (
+  <label className="block text-sm"><span className="mb-1 block text-xs text-sky">{label}{required && <span className="text-pink"> *</span>}</span>{children}</label>
+);
 
 export default function CheckoutPage() {
   const router = useRouter();
   const hydrated = useHydrated();
   const { items, specialRequest, clearCart } = useCartStore();
   const placeOrder = useOrderStore((s) => s.placeOrder);
-
-  const [form, setForm] = useState<Customer>({ fullName: '', phone: '', email: '', address: '' });
+  const [f, setF] = useState<Customer>({ fullName: '', phone: '', email: '', address: '', province: '', district: '', postcode: '' });
   const [payment, setPayment] = useState('promptpay');
-  const [approved, setApproved] = useState<boolean[]>(APPROVALS.map(() => false));
+  const [ok, setOk] = useState<boolean[]>(APPROVALS.map(() => false));
 
-  const total = items.reduce((sum, i) => sum + i.price * i.quantity, 0);
-  const allApproved = approved.every(Boolean);
+  const totals = cartTotals(items);
+  const set = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => setF({ ...f, [e.target.name]: e.target.value });
 
-  const onChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setForm({ ...form, [e.target.name]: e.target.value });
-
-  const onSubmit = (e: React.FormEvent) => {
+  const submit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!allApproved || items.length === 0) return;
-    // ยังไม่มี backend : เก็บคำสั่งซื้อไว้ในเบราว์เซอร์เพื่อแสดงหน้า Confirmation / Tracking
-    placeOrder({
-      items,
-      total,
-      customer: form,
-      payment: PAYMENTS.find((p) => p.id === payment)?.label ?? payment,
-      specialRequest,
-    });
+    if (!ok.every(Boolean) || items.length === 0) return;
+    placeOrder({ items, total: totals.total, customer: f, payment: PAYMENTS.find((p) => p.id === payment)?.label ?? payment, specialRequest });
     clearCart();
     router.push('/order/confirmation');
   };
 
   if (!hydrated) return <div className="min-h-[60vh]" />;
-
   if (items.length === 0) {
-    return (
-      <main className="mx-auto max-w-xl px-4 py-20 text-center">
-        <p className="mb-6 text-mist">ไม่มีสินค้าในตะกร้า</p>
-        <Link href="/custom" className="btn-neon">ไปออกแบบชิ้นงาน</Link>
-      </main>
-    );
+    return <main className="mx-auto max-w-xl px-4 py-24 text-center"><p className="mb-6 text-mist">ไม่มีสินค้าในตะกร้า</p><BrushButton href="/custom">ENTER THE LAB</BrushButton></main>;
   }
 
   return (
-    <main className="mx-auto max-w-6xl px-4 py-10 sm:px-6 lg:px-8">
-      <Link href="/cart" className="mb-6 inline-flex items-center gap-2 text-sm text-mist hover:text-neon"><ArrowLeft className="h-4 w-4" /> กลับไปตะกร้า</Link>
-      <h1 className="mb-8 font-graffiti text-3xl">COMPLETE <span className="text-neon">YOUR ORDER</span></h1>
+    <main className="relative mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
+      <Sparkle color="#ff2ba6" size={24} className="right-10 top-6" />
+      <Scrawl color="#7cc4ff" className="right-[22%] top-3 hidden text-2xl lg:block" style={{ ['--r' as string]: '-4deg' }}>MAKE YOUR MARK</Scrawl>
+      <h1 className="mb-6 text-sm tracking-[0.2em]"><span className="text-neon">07</span> <span className="text-mist">/</span> COMPLETE YOUR ORDER</h1>
 
-      <form onSubmit={onSubmit} className="grid gap-6 lg:grid-cols-3">
-        <div className="space-y-6 lg:col-span-2">
-          <fieldset className="card space-y-4 p-6">
-            <legend className="px-2 text-xs tracking-widest text-neon">1 · CONTACT &amp; 2 · SHIPPING</legend>
-            <div className="grid gap-4 md:grid-cols-2">
-              <label className="text-sm"><span className="mb-1 block text-mist">ชื่อ-นามสกุล *</span><input required name="fullName" value={form.fullName} onChange={onChange} className="field" autoComplete="name" /></label>
-              <label className="text-sm"><span className="mb-1 block text-mist">เบอร์โทรศัพท์ *</span><input required type="tel" name="phone" value={form.phone} onChange={onChange} className="field" autoComplete="tel" /></label>
-            </div>
-            <label className="block text-sm"><span className="mb-1 block text-mist">อีเมล</span><input type="email" name="email" value={form.email} onChange={onChange} className="field" autoComplete="email" /></label>
-            <label className="block text-sm"><span className="mb-1 block text-mist">ที่อยู่จัดส่ง *</span><textarea required name="address" value={form.address} onChange={onChange} rows={3} className="field resize-none" autoComplete="street-address" /></label>
-          </fieldset>
+      <form onSubmit={submit} className="grid gap-4 lg:grid-cols-5">
+        <fieldset className="panel enter space-y-3 p-5" style={{ ['--i' as string]: 0 }}>
+          <legend className="sr-only">Contact</legend>
+          <h2 className="mb-1 text-sm font-medium tracking-[0.14em]">1. CONTACT</h2>
+          <Field label="ชื่อ-นามสกุล" required><input required name="fullName" value={f.fullName} onChange={set} className="field" autoComplete="name" /></Field>
+          <Field label="เบอร์โทรศัพท์" required><input required type="tel" name="phone" value={f.phone} onChange={set} className="field" autoComplete="tel" /></Field>
+          <Field label="อีเมล" required><input required type="email" name="email" value={f.email} onChange={set} className="field" autoComplete="email" /></Field>
+        </fieldset>
 
-          <fieldset className="card p-6">
-            <legend className="px-2 text-xs tracking-widest text-neon">3 · PAYMENT</legend>
-            <div className="grid gap-3 sm:grid-cols-2">
-              {PAYMENTS.map(({ id, label, icon: Icon }) => (
-                <label key={id} className={`flex cursor-pointer items-center gap-3 rounded-lg border p-3 text-sm ${payment === id ? 'border-neon text-neon' : 'border-line text-mist'}`}>
-                  <input type="radio" name="payment" value={id} checked={payment === id} onChange={() => setPayment(id)} className="sr-only" />
-                  <Icon className="h-5 w-5" /> {label}
-                </label>
-              ))}
-            </div>
-            <p className="mt-3 text-xs text-mist">เลือกวิธีชำระเงินเพื่อบันทึกในคำสั่งซื้อ ระบบชำระเงินจริงยังไม่เชื่อมต่อ</p>
-          </fieldset>
-        </div>
+        <fieldset className="panel enter space-y-3 p-5" style={{ ['--i' as string]: 1 }}>
+          <legend className="sr-only">Shipping</legend>
+          <h2 className="mb-1 text-sm font-medium tracking-[0.14em]">2. SHIPPING</h2>
+          <Field label="ที่อยู่จัดส่ง" required><input required name="address" value={f.address} onChange={set} className="field" autoComplete="street-address" /></Field>
+          <Field label="จังหวัด" required>
+            <select required name="province" value={f.province} onChange={set} className="field"><option value="">เลือกจังหวัด</option>{PROVINCES.map((p) => <option key={p}>{p}</option>)}</select>
+          </Field>
+          <Field label="แขวง / อำเภอ" required><input required name="district" value={f.district} onChange={set} className="field" /></Field>
+          <Field label="รหัสไปรษณีย์" required><input required name="postcode" value={f.postcode} onChange={set} inputMode="numeric" pattern="[0-9]{5}" title="รหัสไปรษณีย์ 5 หลัก" className="field" autoComplete="postal-code" /></Field>
+        </fieldset>
 
-        <aside className="space-y-6">
-          <div className="card p-6">
-            <h2 className="mb-4 text-xs tracking-widest text-neon">4 · PRODUCTION</h2>
-            <ul className="space-y-2 text-sm">
-              {items.map((i) => (
-                <li key={i.id} className="flex justify-between gap-3">
-                  <span>{getModelName(i.model)} × {i.quantity}</span>
-                  <span className="text-mist">฿{(i.price * i.quantity).toLocaleString()}</span>
-                </li>
-              ))}
-            </ul>
-            <p className="mt-3 text-xs text-mist">ระยะเวลาผลิต 7–14 วัน · ค่าจัดส่งคำนวณภายหลัง</p>
-            <div className="mt-4 flex items-end justify-between border-t border-line pt-3">
-              <span className="font-bold">TOTAL</span><span className="text-2xl font-bold text-neon">฿{total.toLocaleString()}</span>
-            </div>
-          </div>
-
-          <div className="card space-y-3 p-6">
-            <h2 className="text-xs tracking-widest text-neon">FINAL APPROVAL</h2>
-            {APPROVALS.map((t, idx) => (
-              <label key={t} className="flex items-start gap-2 text-sm text-mist">
-                <input type="checkbox" checked={approved[idx]} onChange={(e) => setApproved(approved.map((v, j) => (j === idx ? e.target.checked : v)))} className="mt-1 accent-[#b6ff00]" />
-                {t}
+        <fieldset className="panel enter p-5" style={{ ['--i' as string]: 2 }}>
+          <legend className="sr-only">Payment</legend>
+          <h2 className="mb-4 text-sm font-medium tracking-[0.14em]">3. PAYMENT</h2>
+          <div className="space-y-3">
+            {PAYMENTS.map(({ id, label, icon: Icon }) => (
+              <label key={id} className={`flex cursor-pointer items-center gap-3 rounded-lg p-2 text-sm transition-colors hover:bg-white/5 ${payment === id ? 'text-white' : 'text-mist'}`}>
+                <input type="radio" name="payment" className="sr-only" checked={payment === id} onChange={() => setPayment(id)} />
+                <span className={`grid h-5 w-5 place-items-center rounded-full border ${payment === id ? 'border-neon bg-neon/20' : 'border-[#4a545d]'}`}><span className={`h-2.5 w-2.5 rounded-full ${payment === id ? 'bg-neon' : ''}`} /></span>
+                <Icon className="h-4 w-4 flex-none" /> {label}
               </label>
             ))}
-            <button type="submit" disabled={!allApproved} className="btn-neon w-full">CREATE MY PIECE</button>
           </div>
-        </aside>
+          <p className="mt-4 text-[11px] text-mist">บันทึกวิธีชำระเงินไว้ในคำสั่งซื้อ (ยังไม่เชื่อมระบบชำระเงินจริง)</p>
+        </fieldset>
+
+        <div className="panel enter flex flex-col items-center p-5 text-center" style={{ ['--i' as string]: 3 }}>
+          <h2 className="mb-4 self-start text-sm font-medium tracking-[0.14em]">4. PRODUCTION</h2>
+          <Timer className="spin-slow h-12 w-12 text-neon" />
+          <p className="mt-3 rounded-full border border-neon/60 px-4 py-1.5 text-sm tracking-widest text-neon shadow-[0_0_14px_rgba(182,255,0,.25)]">7 - 14 DAYS</p>
+          <p className="mt-2 text-xs text-sky">ระยะเวลาผลิต</p>
+          <dl className="mt-6 w-full space-y-1 border-t border-line pt-4 text-left text-xs text-mist">
+            <div className="flex justify-between"><dt>Items</dt><dd>{items.reduce((n, i) => n + i.quantity, 0)}</dd></div>
+            <div className="flex justify-between text-sm text-white"><dt>Total</dt><dd>{formatBaht(totals.total)}</dd></div>
+          </dl>
+        </div>
+
+        <fieldset className="panel enter flex flex-col p-5" style={{ ['--i' as string]: 4 }}>
+          <legend className="sr-only">Final approval</legend>
+          <h2 className="mb-4 text-sm font-medium tracking-[0.14em]">FINAL APPROVAL</h2>
+          <div className="flex-1 space-y-3">
+            {APPROVALS.map((t, i) => (
+              <label key={t} className="flex items-center gap-3 text-sm text-mist">
+                <input type="checkbox" className="check" checked={ok[i]} onChange={(e) => setOk(ok.map((v, j) => (j === i ? e.target.checked : v)))} /> {t}
+              </label>
+            ))}
+          </div>
+          <BrushButton type="submit" disabled={!ok.every(Boolean)} className="mt-6 w-full">CREATE MY PIECE →</BrushButton>
+        </fieldset>
       </form>
     </main>
   );

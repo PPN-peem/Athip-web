@@ -1,102 +1,171 @@
 @import "tailwindcss";
 
-/* ธีม ATHIP 475 : สีแบรนด์จากบอร์ดต้นฉบับ */
+/* ===== ATHIP 475 : สีแบรนด์จากบอร์ดต้นฉบับ ===== */
 @theme {
-  --color-void: #0a0a0a;
-  --color-panel: #141414;
-  --color-line: #2c2c2c;
+  --color-void: #050506;
+  --color-ink: #0b0d0f;
+  --color-line: #232a31;
   --color-neon: #b6ff00;
   --color-pink: #ff2ba6;
   --color-blue: #2d6bff;
-  --color-mist: #bdbdbd;
+  --color-sky: #7cc4ff;
+  --color-mist: #aab2ba;
 }
 @theme inline {
-  --font-sans: var(--font-kanit), ui-sans-serif, system-ui, sans-serif;
-  --font-graffiti: var(--font-marker), var(--font-kanit), cursive;
+  --font-sans: var(--font-chakra), ui-sans-serif, system-ui, sans-serif;
+  --font-graffiti: var(--font-marker), var(--font-chakra), cursive;
+  --font-hand: var(--font-salt), var(--font-marker), cursive;
 }
 
+html { background: var(--color-void); }
 body {
-  background: var(--color-void);
+  background:
+    radial-gradient(900px 500px at 85% -10%, rgba(45, 107, 255, 0.10), transparent 60%),
+    radial-gradient(800px 500px at -10% 110%, rgba(255, 43, 166, 0.08), transparent 60%),
+    var(--color-void);
   color: #fff;
+  letter-spacing: 0.01em;
 }
-:focus-visible {
-  outline: 2px solid var(--color-neon);
-  outline-offset: 2px;
+::selection { background: var(--color-neon); color: #000; }
+:focus-visible { outline: 2px solid var(--color-sky); outline-offset: 3px; }
+
+/* ===== กรอบแผง / การ์ด ===== */
+.panel {
+  position: relative;
+  border: 1px solid var(--color-line);
+  border-radius: 18px;
+  background: linear-gradient(180deg, #0a0c0e, #050506);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.015), 0 20px 50px rgba(0, 0, 0, 0.5);
 }
-::selection {
+.tile {
+  position: relative;
+  border: 1px solid #2a3138;
+  border-radius: 12px;
+  background: linear-gradient(180deg, #0c0e10, #060607);
+  transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+}
+.tile:hover { border-color: #4a545d; transform: translateY(-2px); }
+
+/* ตัวเลือกที่เลือกแล้ว = ขอบสเปรย์เขียว + หยดสี */
+.spray {
+  border-color: var(--color-neon) !important;
+  box-shadow: 0 0 0 1px var(--color-neon), 0 0 22px rgba(182, 255, 0, 0.45), inset 0 0 18px rgba(182, 255, 0, 0.16);
+}
+.spray::after {
+  content: '';
+  position: absolute;
+  top: -4px; right: 14px;
+  width: 10px; height: 26px;
+  border-radius: 0 0 8px 8px;
   background: var(--color-neon);
-  color: #000;
+  filter: drop-shadow(0 0 6px rgba(182, 255, 0, 0.7));
+  transform-origin: top;
+  animation: drip 0.7s cubic-bezier(.2,.9,.3,1) both;
+  pointer-events: none;
 }
+.spray-pink { border-color: var(--color-pink) !important; box-shadow: 0 0 0 1px var(--color-pink), 0 0 22px rgba(255, 43, 166, 0.4); }
 
-/* พื้นหลังตารางบางๆ สำหรับพื้นที่แสดงสินค้า 3D */
-.blueprint {
-  background-color: #0e0e0e;
-  background-image:
-    linear-gradient(#1f1f1f 1px, transparent 1px),
-    linear-gradient(90deg, #1f1f1f 1px, transparent 1px);
-  background-size: 28px 28px;
-}
-
-/* ปุ่มและกรอบตามสไตล์ต้นฉบับ */
-.btn-neon {
+/* ===== ปุ่มพู่กัน (ขอบขรุขระแบบสเปรย์) ===== */
+.brush {
+  --c: var(--color-neon);
+  position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
-  border-radius: 0.5rem;
-  background: var(--color-neon);
+  min-height: 52px;
+  padding: 0 34px;
   color: #000;
   font-weight: 700;
-  padding: 0.85rem 1.5rem;
-  transition: box-shadow 0.15s, transform 0.15s;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  isolation: isolate;
+  transition: filter 0.2s, transform 0.2s;
+  cursor: pointer;
 }
-.btn-neon:hover:not(:disabled) {
-  box-shadow: 0 0 24px rgba(182, 255, 0, 0.45);
-  transform: translateY(-1px);
+.brush-pink { --c: var(--color-pink); color: #fff; }
+.brush-blue { --c: var(--color-blue); color: #fff; }
+.brush-bg {
+  position: absolute; inset: 0; z-index: -1;
+  background: var(--c);
+  clip-path: polygon(1% 14%, 4% 3%, 18% 7%, 37% 1%, 60% 6%, 82% 1%, 97% 8%, 99% 30%, 100% 62%, 97% 93%, 80% 99%, 58% 94%, 36% 100%, 14% 95%, 2% 98%, 0 72%, 2% 42%);
+  transition: transform 0.25s;
 }
-.btn-neon:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
+.brush::after {
+  content: ''; position: absolute; z-index: -1; left: 22%; bottom: -9px; width: 7px; height: 14px;
+  border-radius: 0 0 6px 6px; background: var(--c); transform-origin: top; animation: drip 2.6s ease-in-out infinite;
 }
-.btn-ghost {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  border-radius: 0.5rem;
-  border: 1px solid #444;
-  color: #fff;
-  padding: 0.7rem 1.1rem;
-  transition: border-color 0.15s, color 0.15s;
+.brush:hover:not(:disabled) { filter: drop-shadow(0 0 14px color-mix(in srgb, var(--c) 70%, transparent)); transform: translateY(-2px) rotate(-0.4deg); }
+.brush:hover:not(:disabled) .brush-bg { transform: scale(1.025); }
+.brush:active:not(:disabled) { transform: translateY(0) scale(0.98); }
+.brush:disabled { opacity: 0.38; cursor: not-allowed; }
+.brush-label { display: inline-flex; align-items: center; gap: 10px; }
+
+.chip {
+  border: 1px solid #343c44; border-radius: 999px; padding: 6px 18px; font-size: 13px; letter-spacing: 0.08em;
+  color: #cfd6dc; background: #07080a; transition: all 0.18s;
 }
-.btn-ghost:hover:not(:disabled) {
-  border-color: var(--color-neon);
-  color: var(--color-neon);
-}
-.btn-ghost:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-}
+.chip:hover { border-color: var(--color-sky); }
+.chip[aria-pressed='true'] { background: var(--color-neon); border-color: var(--color-neon); color: #000; font-weight: 700; box-shadow: 0 0 14px rgba(182, 255, 0, 0.5); }
+
 .field {
-  width: 100%;
-  border-radius: 0.5rem;
-  border: 1px solid #3a3a3a;
-  background: #101010;
-  padding: 0.7rem 0.9rem;
-  color: #fff;
+  width: 100%; border: 1px solid #2f373e; border-radius: 10px; background: #08090b; color: #fff; padding: 0.7rem 0.9rem; font-size: 14px;
+  transition: border-color 0.2s, box-shadow 0.2s;
 }
-.field::placeholder {
-  color: #6b6b6b;
+.field::placeholder { color: #5d6770; }
+.field:focus { outline: none; border-color: var(--color-sky); box-shadow: 0 0 0 3px rgba(124, 196, 255, 0.15); }
+select.field { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23aab2ba' fill='none' stroke-width='1.6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; }
+.check { appearance: none; width: 18px; height: 18px; border: 1.5px solid #4a545d; border-radius: 4px; display: inline-grid; place-content: center; flex: none; background: #08090b; transition: all 0.15s; }
+.check::before { content: ''; width: 9px; height: 5px; border-left: 2.5px solid #000; border-bottom: 2.5px solid #000; transform: rotate(-45deg) scale(0); margin-top: -2px; transition: transform 0.15s; }
+.check:checked { background: var(--color-neon); border-color: var(--color-neon); }
+.check:checked::before { transform: rotate(-45deg) scale(1); }
+
+input[type='range'] { appearance: none; height: 4px; border-radius: 4px; background: #2a3138; cursor: pointer; width: 100%; }
+input[type='range']::-webkit-slider-thumb { appearance: none; width: 16px; height: 16px; border-radius: 50%; background: #fff; border: 3px solid #1a1d20; box-shadow: 0 0 0 1px #fff, 0 0 12px rgba(255,255,255,.5); }
+input[type='range']::-moz-range-thumb { width: 14px; height: 14px; border-radius: 50%; background: #fff; border: 3px solid #1a1d20; }
+
+/* ===== ตัวเลขขั้นตอน ===== */
+.dot { width: 30px; height: 30px; border-radius: 50%; border: 1px solid #3a434b; display: grid; place-items: center; font-size: 11px; color: #8d979f; background: #07080a; transition: all 0.25s; }
+.dot-done { border-color: var(--color-neon); color: var(--color-neon); }
+.dot-active { color: #fff; border-color: #fff; box-shadow: 0 0 0 3px #07080a, 0 0 0 4px var(--color-sky), 0 0 18px rgba(124, 196, 255, 0.7); animation: pulseRing 2.2s ease-in-out infinite; }
+
+/* ===== ข้อความ ===== */
+.th-sub { color: var(--color-sky); font-size: 14px; }
+.neon-text { color: var(--color-neon); text-shadow: 0 0 18px rgba(182, 255, 0, 0.45); }
+.glitch:hover { animation: glitch 0.45s steps(2) 1; }
+.ticker { display: flex; width: max-content; animation: marquee 28s linear infinite; }
+
+/* ===== Animations ===== */
+@keyframes drip { 0% { transform: scaleY(0); } 70% { transform: scaleY(1.15); } 100% { transform: scaleY(1); } }
+@keyframes pulseRing { 0%, 100% { box-shadow: 0 0 0 3px #07080a, 0 0 0 4px var(--color-sky), 0 0 14px rgba(124, 196, 255, 0.5); } 50% { box-shadow: 0 0 0 3px #07080a, 0 0 0 5px var(--color-sky), 0 0 26px rgba(124, 196, 255, 0.9); } }
+@keyframes floaty { 0%, 100% { transform: translateY(0) rotate(var(--r, 0deg)); } 50% { transform: translateY(-10px) rotate(calc(var(--r, 0deg) + 2deg)); } }
+@keyframes twinkle { 0%, 100% { opacity: 0.35; transform: scale(0.8) rotate(0deg); } 50% { opacity: 1; transform: scale(1.15) rotate(18deg); } }
+@keyframes enter { from { opacity: 0; transform: translateY(14px); filter: blur(4px); } to { opacity: 1; transform: none; filter: none; } }
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes marquee { to { transform: translateX(-50%); } }
+@keyframes glitch { 0% { text-shadow: 3px 0 var(--color-pink), -3px 0 var(--color-sky); transform: translateX(-1px); } 50% { text-shadow: -3px 0 var(--color-pink), 3px 0 var(--color-sky); transform: translateX(2px) skewX(-6deg); } 100% { text-shadow: none; transform: none; } }
+@keyframes flicker { 0%, 100% { opacity: 1; } 46% { opacity: 1; } 48% { opacity: 0.55; } 50% { opacity: 1; } 53% { opacity: 0.7; } }
+@keyframes sheen { from { background-position: -200% 0; } to { background-position: 200% 0; } }
+
+.enter { animation: enter 0.55s cubic-bezier(.2,.8,.2,1) both; animation-delay: calc(var(--i, 0) * 55ms); }
+.floaty { animation: floaty 7s ease-in-out infinite; animation-delay: var(--d, 0s); }
+.twinkle { animation: twinkle 3.4s ease-in-out infinite; animation-delay: var(--d, 0s); }
+.spin-slow { animation: spin 40s linear infinite; }
+.spin-rev { animation: spin 60s linear infinite reverse; }
+.flicker { animation: flicker 5s linear infinite; }
+.sheen-text { background: linear-gradient(100deg, #fff 30%, var(--color-neon) 48%, #fff 66%); background-size: 200% 100%; -webkit-background-clip: text; background-clip: text; color: transparent; animation: sheen 6s linear infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; }
 }
-.field:focus {
-  border-color: var(--color-neon);
-  outline: none;
+
+/* พื้นหลังกริดบางๆ หลังชิ้นงาน 3D */
+.blueprint-lite {
+  background-color: #060708;
+  background-image:
+    radial-gradient(circle at 50% 45%, rgba(124, 196, 255, 0.08), transparent 60%),
+    linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+  background-size: auto, 32px 32px, 32px 32px;
 }
-.card {
-  border-radius: 0.75rem;
-  border: 1px solid var(--color-line);
-  background: var(--color-panel);
-}
-input[type='range'] {
-  accent-color: var(--color-neon);
-}
+@keyframes kenburns { from { transform: scale(1.02) translateX(0); } to { transform: scale(1.1) translateX(-1.5%); } }
+.kenburns { animation: kenburns 18s ease-in-out infinite alternate; }
